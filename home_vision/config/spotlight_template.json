@@ -1,0 +1,21 @@
+{
+  "module_id": "doorway_bedroom",
+  "mqtt_host": "127.0.0.1",
+  "mqtt_port": 1883,
+  "trigger_on_topics": [
+    "events/person/bedroom/out"
+  ],
+  "trigger_off_topics": [
+    "events/person/bathroom/in"
+  ],
+  "light_hold_seconds": 8,
+  "brightness": 0.85,
+  "rest_brightness": 0.0,
+  "servo_pan_pin": 12,
+  "servo_tilt_pin": 13,
+  "servo_pan_angle": -20.0,
+  "servo_tilt_angle": -5.0,
+  "servo_rest_pan": 0.0,
+  "servo_rest_tilt": 0.0,
+  "led_pwm_pin": 18
+}
