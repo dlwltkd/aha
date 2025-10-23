@@ -46,11 +46,6 @@ This directory packages the first iteration of the ceiling-mounted Raspberry Pi�
 
 After mounting the camera, grab a still frame (e.g., with `python3 - <<'PY' ...`) and mark the bedroom/bathroom thresholds manually. Update `/etc/home-vision/config.json` with normalized coordinates (0–1). Each doorway needs just two points, and the living-room polygon can be any convex shape covering the seating area. Start with the defaults and refine once you have real imagery.
 
-## What to Build Next
-
-- Script a helper to capture calibration frames and overlay the current virtual lines/polygon.
-- Add optional YOLO/ByteTrack integration behind a feature flag for tougher lighting conditions.
-- Flesh out the PIR publisher on the Pi Zero nodes with retry logic and a health heartbeat topic.
 
 ## Doorway Spotlight Node (Pi Zero)
 

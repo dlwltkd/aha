@@ -1,17 +1,10 @@
 """MQTT-driven spotlight controller for the Raspberry Pi Zero doorway modules.
 
-<<<<<<< HEAD
-각 노드는 PWM LED와 2축 서보(팬/틸트)를 제어하여 지정된 방향으로 조명을
-비추며, Pi 5 비전 서비스에서 전달되는 융합 이벤트를 받아 경로 조명을
-자동으로 . 초기 설치 시 간단한 캘리브레이션 모드로 정확한
-방향을 맞출 수 있도록 지원.
-=======
 Each node manages a PWM LED plus two servos (pan/tilt) that aim the beam toward
 a predefined zone. The controller subscribes to fused events published by the
 Pi 5 vision service, reacting by lighting the path for the occupant. A simple
 calibration mode is provided so you can park the servos at the rest or target
 angles during installation.
->>>>>>> 81f8f4a219d5256efbfe3836953edb9d7f5ed919
 """
 
 from __future__ import annotations
