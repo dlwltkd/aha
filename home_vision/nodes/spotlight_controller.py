@@ -1,10 +1,9 @@
-"""MQTT-driven spotlight controller for the Raspberry Pi Zero doorway modules.
+"""Raspberry Pi Zero 문간 모듈을 위한 MQTT 기반 스포트라이트 제어기.
 
-Each node manages a PWM LED plus two servos (pan/tilt) that aim the beam toward
-a predefined zone. The controller subscribes to fused events published by the
-Pi 5 vision service, reacting by lighting the path for the occupant. A simple
-calibration mode is provided so you can park the servos at the rest or target
-angles during installation.
+각 노드는 PWM LED와 2축 서보(팬/틸트)를 제어하여 지정된 방향으로 조명을
+비추며, Pi 5 비전 서비스에서 전달되는 융합 이벤트를 받아 경로 조명을
+자동으로 . 초기 설치 시 간단한 캘리브레이션 모드로 정확한
+방향을 맞출 수 있도록 지원.
 """
 
 from __future__ import annotations
@@ -79,7 +78,7 @@ def load_config(path: Path) -> SpotlightConfig:
 
 
 class SpotlightHardware:
-    """Wrap the GPIO hardware so the controller can be mocked on non-Pi hosts."""
+    """GPIO 제어를 캡슐화하여 개발 환경에서도 모의 동작이 가능하도록 한다."""
 
     def __init__(self, config: SpotlightConfig):
         self._config = config
@@ -248,28 +247,28 @@ def setup_logging() -> None:
 
 
 def parse_arguments() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Doorway spotlight controller")
+    parser = argparse.ArgumentParser(description="문간 스포트라이트 제어기")
     parser.add_argument(
         "config",
         nargs="?",
         default=str(DEFAULT_CONFIG_PATH),
-        help="Path to the config file (default: /etc/pir-node/spotlight.json)",
+        help="설정 파일 경로 (기본값: /etc/pir-node/spotlight.json)",
     )
     parser.add_argument(
         "--set-orientation",
         choices=["rest", "target"],
-        help="Calibration helper: move the servos to the given orientation and exit",
+        help="캘리브레이션 모드: 지정한 방향으로 서보를 이동시키고 종료",
     )
     parser.add_argument(
         "--duration",
         type=float,
         default=0.0,
-        help="How long to hold the pose in calibration mode (seconds). 0 keeps it until Ctrl+C",
+        help="캘리브레이션 모드 유지 시간(초). 0이면 Ctrl+C까지 유지",
     )
     parser.add_argument(
         "--set-brightness",
         type=float,
-        help="LED brightness (0-1). Falls back to the configured value when omitted",
+        help="LED 밝기(0~1). 미지정 시 설정 값 사용",
     )
     return parser.parse_args()
 
@@ -295,7 +294,7 @@ def run_orientation_mode(
         hardware.set_brightness(default_brightness if brightness is None else brightness)
 
         logging.info(
-            "Servo orientation applied (mode=%s, pan=%.1f, tilt=%.1f, brightness=%.2f)",
+            "서보 방향 적용 완료 (mode=%s, pan=%.1f, tilt=%.1f, brightness=%.2f)",
             mode,
             pan,
             tilt,
@@ -305,11 +304,11 @@ def run_orientation_mode(
         if duration > 0:
             time.sleep(duration)
         else:
-            logging.info("Press Ctrl+C to exit calibration mode.")
+            logging.info("Ctrl+C를 누르면 종료합니다.")
             while True:
                 time.sleep(1.0)
     except KeyboardInterrupt:
-        logging.info("Exiting calibration mode.")
+        logging.info("캘리브레이션 모드를 종료합니다.")
     finally:
         hardware.shutdown()
     return 0
