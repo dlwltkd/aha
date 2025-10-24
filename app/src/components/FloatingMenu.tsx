@@ -29,10 +29,20 @@ type Props = {
 };
 
 const ANIMATION_DURATION = 180;
-const DEFAULT_RADIUS = 65;
+const DEFAULT_RADIUS = 72;
 
 export function FloatingMenu({ items, visible, onPressToggle, origin }: Props) {
   const progress = useSharedValue(0);
+  const containerSize = DEFAULT_RADIUS * 2 + 72;
+  const offsets = useMemo(() => {
+    const offset = DEFAULT_RADIUS;
+    return {
+      top: origin?.top !== undefined ? origin.top - offset : undefined,
+      right: origin?.right !== undefined ? origin.right - offset : undefined,
+      bottom: origin?.bottom !== undefined ? origin.bottom - offset : undefined,
+      left: origin?.left !== undefined ? origin.left - offset : undefined
+    };
+  }, [origin]);
   const angles = useMemo(() => {
     if (items.length <= 1) {
       return [Math.PI];
@@ -70,7 +80,22 @@ export function FloatingMenu({ items, visible, onPressToggle, origin }: Props) {
 
   return (
     <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
-      <View pointerEvents="auto" style={[styles.container, origin]}>
+      {visible && (
+        <TouchableWithoutFeedback onPress={onPressToggle}>
+          <Animated.View style={[styles.backdrop, backdropStyle]} />
+        </TouchableWithoutFeedback>
+      )}
+      <View
+        pointerEvents="auto"
+        style={[
+          styles.container,
+          {
+            width: containerSize,
+            height: containerSize,
+            ...offsets
+          }
+        ]}
+      >
         {items.map((item, index) => (
           <Animated.View key={item.icon} style={[styles.item, buttonStyles[index]]}>
             <IconButton
@@ -101,16 +126,13 @@ export function FloatingMenu({ items, visible, onPressToggle, origin }: Props) {
 const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#000"
+    backgroundColor: "rgba(0,0,0,0.1)"
   },
   container: {
     position: "absolute",
-    top: 24,
-    right: 24,
     alignItems: "center",
     justifyContent: "center",
-    width: 72,
-    height: 72,
+    padding: 24,
     zIndex: 50
   },
   item: {
