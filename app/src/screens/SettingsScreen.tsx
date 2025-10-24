@@ -24,11 +24,11 @@ export default function SettingsScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.leadText}>기능의 on/off와 스피커의 음량을 조절해주세요</Text>
+        <Text style={styles.leadText}>기능과 스피커의 음량을 조절해주세요</Text>
 
         <SettingCard
-          label="거실 조명 자동 제어"
-          description="PIR과 카메라를 결합해 밝기를 맞춥니다."
+          label="스포트라이트 이동 유도  "
+          description={"조명이 부드럽게 회전하며 문쪽으로\n밝아져 이동을 유도합니다."}
           value={livingLight}
           onValueChange={setLivingLight}
         />
