@@ -66,7 +66,7 @@ export default function DashboardScreen() {
           { icon: "account", onPress: () => navigation.navigate("CallSign" as never) },
           { icon: "cog", onPress: () => navigation.navigate("Settings" as never) },
           { icon: "history", onPress: () => navigation.navigate("Timeline" as never) },
-          { icon: "chart-pie", onPress: () => {} }
+          { icon: "chart-pie", onPress: () => navigation.navigate("Stats" as never) }
         ]}
       />
 

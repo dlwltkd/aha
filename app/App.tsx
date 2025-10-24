@@ -12,12 +12,14 @@ import DashboardScreen from "./src/screens/DashboardScreen";
 import SettingsScreen from "./src/screens/SettingsScreen";
 import CallSignScreen from "./src/screens/CallSignScreen";
 import TimelineScreen from "./src/screens/TimelineScreen";
+import StatsScreen from "./src/screens/StatsScreen";
 
 export type RootStackParamList = {
   Dashboard: undefined;
   Settings: undefined;
   CallSign: undefined;
   Timeline: undefined;
+  Stats: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -48,6 +50,15 @@ export default function App() {
             <Stack.Screen
               name="Timeline"
               component={TimelineScreen}
+              options={{
+                presentation: "card",
+                animation: "slide_from_right",
+                headerShown: false
+              }}
+            />
+            <Stack.Screen
+              name="Stats"
+              component={StatsScreen}
               options={{
                 presentation: "card",
                 animation: "slide_from_right",

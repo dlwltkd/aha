@@ -6,7 +6,7 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["expo", "react", "react-native"],
+    "types": ["expo", "react", "react-native", "react-native-svg"],
     "jsx": "react-native"
   },
   "include": ["src", "app.config.ts", "App.tsx"]
