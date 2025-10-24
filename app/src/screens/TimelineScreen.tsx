@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
@@ -17,14 +17,13 @@ export default function TimelineScreen() {
 
   const events = useMemo(() => buildTimeline(selectedDate), [selectedDate]);
   const calendarMatrix = useMemo(() => buildCalendarMatrix(selectedDate), [selectedDate]);
-
   const formattedDate = formatDate(selectedDate);
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.headerRow}>
         <IconButton icon="chevron-left" size={28} iconColor={theme.colors.primary} onPress={() => navigation.goBack()} />
-        <Text style={styles.headerTitle}>íƒ€ìž„ë¼ì¸</Text>
+        <Text style={styles.headerTitle}>타임라인</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -32,15 +31,17 @@ export default function TimelineScreen() {
           <View style={styles.datePill}>
             <Text style={styles.dateText}>{formattedDate}</Text>
           </View>
-          <TouchableOpacity style={styles.dateButton} onPress={() => setCalendarVisible(!calendarVisible)}>
-            <Text style={styles.dateButtonLabel}>ë‚ ì§œ ì„ íƒ</Text>
+          <TouchableOpacity style={styles.dateButton} onPress={() => setCalendarVisible(prev => !prev)}>
+            <Text style={styles.dateButtonLabel}>날짜 선택</Text>
           </TouchableOpacity>
         </View>
 
         {calendarVisible && (
           <View style={styles.calendarCard}>
             <View style={styles.calendarHeader}>
-              <Text style={styles.calendarTitle}>{selectedDate.getFullYear()}ë…„ {selectedDate.getMonth() + 1}ì›”</Text>
+              <Text style={styles.calendarTitle}>
+                {selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월
+              </Text>
             </View>
             <View style={styles.weekRow}>
               {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map(day => (
@@ -89,21 +90,24 @@ export default function TimelineScreen() {
 }
 
 function formatDate(date: Date) {
-  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
+  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(
+    2,
+    "0"
+  )}`;
 }
 
 function buildTimeline(date: Date): TimelineEntry[] {
   const base = date.getDate();
   const template: TimelineEntry[] = [
-    { time: "08:12", description: "ì•ˆë°© í‡´ì‹¤" },
-    { time: "08:18", description: "ê±°ì‹¤ ë°©ë¬¸" },
-    { time: "09:05", description: "í™”ìž¥ì‹¤ ì´ìš© ì‹œìž‘" },
-    { time: "09:12", description: "í™”ìž¥ì‹¤ ì´ìš© ì¢…ë£Œ" },
-    { time: "12:33", description: "ì•ˆë°© ìž…ì‹¤" },
-    { time: "15:04", description: "ê±°ì‹¤ ì²´ë¥˜" },
-    { time: "18:20", description: "í™”ìž¥ì‹¤ ì´ìš© ì‹œìž‘" },
-    { time: "18:27", description: "í™”ìž¥ì‹¤ ì´ìš© ì¢…ë£Œ" },
-    { time: "22:03", description: "ì•ˆë°© ìž…ì‹¤" }
+    { time: "08:12", description: "안방 퇴실" },
+    { time: "08:18", description: "거실 방문" },
+    { time: "09:05", description: "화장실 이용 시작" },
+    { time: "09:12", description: "화장실 이용 종료" },
+    { time: "12:33", description: "안방 입실" },
+    { time: "15:04", description: "거실 체류" },
+    { time: "18:20", description: "화장실 이용 시작" },
+    { time: "18:27", description: "화장실 이용 종료" },
+    { time: "22:03", description: "안방 입실" }
   ];
   return template.map((entry, idx) => {
     const minutesOffset = (base + idx) % 5;
@@ -118,14 +122,16 @@ function buildTimeline(date: Date): TimelineEntry[] {
 }
 
 function buildCalendarMatrix(date: Date): (Date | null)[][] {
-  const first = new Date(date.getFullYear(), date.getMonth(), 1);
-  const startDay = first.getDay();
+  const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+  const startOffset = firstDay.getDay();
   const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+
   const matrix: (Date | null)[][] = [];
-  let currentDay = 1 - startDay;
+  let currentDay = 1 - startOffset;
+
   for (let week = 0; week < 6; week++) {
     const row: (Date | null)[] = [];
-    for (let d = 0; d < 7; d++) {
+    for (let day = 0; day < 7; day++) {
       if (currentDay < 1 || currentDay > daysInMonth) {
         row.push(null);
       } else {
@@ -286,4 +292,3 @@ const styles = StyleSheet.create({
     color: "#0F172A"
   }
 });
-
