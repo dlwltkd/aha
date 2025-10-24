@@ -61,7 +61,7 @@ export default function DashboardScreen() {
       <FloatingMenu
         visible={menuOpen}
         onPressToggle={() => setMenuOpen(prev => !prev)}
-        origin={{ top: 24, right: 24 }}
+        origin={{ top: 75, right: 10 }}
         items={[
           { icon: "account", onPress: () => navigation.navigate("CallSign" as never) },
           { icon: "cog", onPress: () => navigation.navigate("Settings" as never) },
