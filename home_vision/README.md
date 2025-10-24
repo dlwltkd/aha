@@ -92,3 +92,17 @@ After mounting the camera, grab a still frame (e.g., with `python3 - <<'PY' ...`
 
 - Add `--duration 5` to hold the pose for five seconds, or leave it at the default (0) to keep the pose until you press Ctrl+C.
 - Include `--set-brightness 0.6` (0–1 range) if you want to dim the LED while aligning.
+
+## React Native App (Expo)
+
+- Location: `app/`
+- Purpose: live dashboard + manual control UI for mobile/web via Expo.
+- Setup:
+
+  ```bash
+  cd app
+  npm install
+  npm start
+  ```
+
+- Default endpoints live in `app/app.config.ts`; adjust `wsUrl` and `apiBase` once the FastAPI bridge is deployed.

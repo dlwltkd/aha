@@ -27,6 +27,7 @@ import cv2  # type: ignore
 import numpy as np
 import paho.mqtt.client as mqtt
 
+
 try:
     from libcamera import Transform  # type: ignore
     from picamera2 import Picamera2  # type: ignore
