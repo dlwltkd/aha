@@ -1,44 +1,72 @@
+import "react-native-gesture-handler";
+import "react-native-reanimated";
+
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Provider as PaperProvider } from "react-native-paper";
 import { StatusBar } from "expo-status-bar";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Provider as PaperProvider } from "react-native-paper";
 
-import { theme } from "@/theme";
-import DashboardScreen from "@/screens/DashboardScreen";
-import SettingsScreen from "@/screens/SettingsScreen";
+import { theme } from "./src/theme";
+import DashboardScreen from "./src/screens/DashboardScreen";
+import SettingsScreen from "./src/screens/SettingsScreen";
+import CallSignScreen from "./src/screens/CallSignScreen";
+import TimelineScreen from "./src/screens/TimelineScreen";
 
 export type RootStackParamList = {
   Dashboard: undefined;
   Settings: undefined;
+  CallSign: undefined;
+  Timeline: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <PaperProvider theme={theme}>
-      <NavigationContainer>
-        <StatusBar style="light" />
-        <Stack.Navigator
-          initialRouteName="Dashboard"
-          screenOptions={{
-            headerStyle: { backgroundColor: theme.colors.primary },
-            headerTintColor: theme.colors.onPrimary,
-            headerTitleStyle: { fontWeight: "600" }
-          }}
-        >
-          <Stack.Screen
-            name="Dashboard"
-            component={DashboardScreen}
-            options={{ title: "Home Vision" }}
-          />
-          <Stack.Screen
-            name="Settings"
-            component={SettingsScreen}
-            options={{ title: "Settings" }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </PaperProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <PaperProvider theme={theme}>
+        <NavigationContainer>
+          <StatusBar style="dark" />
+          <Stack.Navigator
+            initialRouteName="Dashboard"
+            screenOptions={{
+              headerShown: false,
+              animation: "fade"
+            }}
+          >
+            <Stack.Screen name="Dashboard" component={DashboardScreen} />
+            <Stack.Screen
+              name="CallSign"
+              component={CallSignScreen}
+              options={{
+                presentation: "card",
+                animation: "slide_from_right",
+                headerShown: false
+              }}
+            />
+            <Stack.Screen
+              name="Timeline"
+              component={TimelineScreen}
+              options={{
+                presentation: "card",
+                animation: "slide_from_right",
+                headerShown: false
+              }}
+            />
+            <Stack.Screen
+              name="Settings"
+              component={SettingsScreen}
+              options={{
+                headerShown: true,
+                headerStyle: { backgroundColor: theme.colors.primary },
+                headerTintColor: theme.colors.onPrimary,
+                headerTitle: "설정"
+              }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PaperProvider>
+    </GestureHandlerRootView>
   );
 }

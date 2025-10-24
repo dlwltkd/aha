@@ -1,0 +1,21 @@
+# General
+.DS_Store
+Thumbs.db
+*.log
+
+# Node / Expo
+node_modules/
+app/node_modules/
+app/yarn.lock
+
+# Python
+__pycache__/
+*.pyc
+
+# Expo / Metro
+.expo/
+.expo-shared/
+.metro-cache/
+
+# VSCode
+.vscode/

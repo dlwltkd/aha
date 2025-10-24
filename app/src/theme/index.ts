@@ -11,9 +11,13 @@ export const theme = {
     secondary: colors.secondary,
     background: colors.background,
     surface: colors.surface,
+    surfaceVariant: colors.mutedSurface,
     success: "#45B36B",
     warning: "#F2994A",
-    error: "#EB5757"
+    error: "#EB5757",
+    outline: "#D2C7B8",
+    textPrimary: colors.textPrimary,
+    textSecondary: colors.textSecondary
   }
 };
 

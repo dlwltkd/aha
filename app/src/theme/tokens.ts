@@ -2,13 +2,14 @@
 // Replace the values below with automated exports when the design system is finalized.
 
 export const colors = {
-  primary: "#0B3D91",
-  secondary: "#1B7CE2",
-  accent: "#FFB347",
-  background: "#F5F7FA",
+  primary: "#607833",
+  secondary: "#8EA04D",
+  accent: "#CDBE9A",
+  background: "#FAF8F1",
   surface: "#FFFFFF",
-  textPrimary: "#0F172A",
-  textSecondary: "#334155"
+  mutedSurface: "#E5D8BD",
+  textPrimary: "#2C2C2C",
+  textSecondary: "#616161"
 } as const;
 
 export const spacing = {

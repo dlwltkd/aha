@@ -1,12 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { Appbar, Button, Card, Chip, Text } from "react-native-paper";
+import { SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
+import { Button, Text } from "react-native-paper";
 import Constants from "expo-constants";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
-import { theme } from "@/theme";
-import { useWebSocket } from "@/hooks/useWebSocket";
-import { RoomCard } from "@/components/RoomCard";
+import { theme } from "../theme";
+import { useWebSocket } from "../hooks/useWebSocket";
+import { FloatingMenu } from "../components/FloatingMenu";
 
 type DashboardEvent = {
   event?: string;
@@ -27,9 +27,10 @@ function formatTimestamp(ts?: number) {
 
 export default function DashboardScreen() {
   const navigation = useNavigation();
-  const [events, setEvents] = useState<DashboardEvent[]>([]);
   const [presence, setPresence] = useState<boolean | undefined>(undefined);
+  const [lastUpdate, setLastUpdate] = useState<number | undefined>(undefined);
   const [wsUrl, setWsUrl] = useState<string | undefined>(undefined);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -39,109 +40,133 @@ export default function DashboardScreen() {
   );
 
   useWebSocket(wsUrl, (incoming: DashboardEvent) => {
-    setEvents(prev => [incoming, ...prev].slice(0, 20));
-
     const data = incoming?.data as { present?: boolean } | undefined;
     if (data?.present !== undefined) {
       setPresence(Boolean(data.present));
     }
+    if (incoming?.ts) {
+      setLastUpdate(incoming.ts);
+    }
   });
 
-  const presenceChip = useMemo(() => {
+  const presenceLabel = useMemo(() => {
     if (presence === undefined) {
-      return <Chip style={styles.chip}>Unknown</Chip>;
+      return "상태 정보를 수신 중입니다.";
     }
-    return (
-      <Chip icon={presence ? "account" : "account-off"} style={styles.chip} selected={presence} onPress={() => {}}>
-        {presence ? "Living room: occupied" : "Living room: empty"}
-      </Chip>
-    );
+    return presence ? "거실에 머무르고 있어요." : "거실을 비웠어요.";
   }, [presence]);
 
-  const handleNavigateSettings = () => {
-    navigation.navigate("Settings" as never);
-  };
-
   return (
-    <View style={styles.container}>
-      <Appbar.Header>
-        <Appbar.Content title="Home Vision" />
-        <Appbar.Action icon="cog" onPress={handleNavigateSettings} />
-      </Appbar.Header>
+    <SafeAreaView style={styles.safeArea}>
+      <FloatingMenu
+        visible={menuOpen}
+        onPressToggle={() => setMenuOpen(prev => !prev)}
+        origin={{ top: 24, right: 24 }}
+        items={[
+          { icon: "account", onPress: () => navigation.navigate("CallSign" as never) },
+          { icon: "cog", onPress: () => navigation.navigate("Settings" as never) },
+          { icon: "history", onPress: () => navigation.navigate("Timeline" as never) },
+          { icon: "chart-pie", onPress: () => {} }
+        ]}
+      />
 
-      <ScrollView contentContainerStyle={styles.content}>
-        <Card style={styles.card}>
-          <Card.Title title="Presence" subtitle="Real-time status" />
-          <Card.Content>{presenceChip}</Card.Content>
-        </Card>
-
-        <View style={styles.rooms}>
-          <RoomCard room="Bedroom" status="off" onPress={() => {}} />
-          <RoomCard room="Bathroom" status="off" onPress={() => {}} />
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>실시간 위치</Text>
         </View>
 
-        <Card style={styles.card}>
-          <Card.Title title="Recent Events" subtitle="Latest MQTT → WS messages" />
-          <Card.Content>
-            {events.length === 0 ? (
-              <Text variant="bodyMedium" style={styles.empty}>
-                Waiting for activity…
-              </Text>
-            ) : (
-              events.map((evt, index) => (
-                <View key={`${evt.topic}-${index}`} style={styles.eventRow}>
-                  <Text variant="labelMedium" style={styles.eventTopic}>
-                    {evt.topic ?? evt.event ?? "event"}
-                  </Text>
-                  <Text variant="bodySmall" style={styles.eventTime}>
-                    {formatTimestamp(evt.ts)}
-                  </Text>
-                </View>
-              ))
-            )}
-          </Card.Content>
-          <Card.Actions>
-            <Button onPress={() => setEvents([])}>Clear</Button>
-          </Card.Actions>
-        </Card>
+        <View style={styles.messageBlock}>
+          <Text style={styles.primaryMessage}>OO의 실시간 위치를 볼 수 있어요</Text>
+          <Text style={styles.secondaryMessage}>{presenceLabel}</Text>
+        </View>
+
+        <View style={styles.mapShell}>
+          <View style={styles.mapPlaceholder}>
+            <Text style={styles.mapPlaceholderText}>지도 준비 중</Text>
+          </View>
+          <Text style={styles.updatedAt}>마지막 업데이트 · {formatTimestamp(lastUpdate)}</Text>
+        </View>
+
+        <Button mode="contained" style={styles.emergencyButton} labelStyle={styles.emergencyLabel} onPress={() => {}}>
+          긴급신고
+        </Button>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: theme.colors.background
   },
-  content: {
-    padding: 16,
-    gap: 16
+  container: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingTop: 120,
+    paddingBottom: 40,
+    gap: 32,
+    backgroundColor: theme.colors.background
   },
-  card: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: 16
+  header: {
+    alignItems: "flex-start"
   },
-  rooms: {
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: theme.colors.primary
+  },
+  messageBlock: {
     gap: 12
   },
-  chip: {
-    alignSelf: "flex-start"
+  primaryMessage: {
+    fontSize: 22,
+    fontWeight: "600",
+    color: theme.colors.textPrimary,
+    textAlign: "center"
   },
-  empty: {
-    color: theme.colors.onSurfaceVariant
+  secondaryMessage: {
+    fontSize: 16,
+    color: theme.colors.textSecondary,
+    textAlign: "center"
   },
-  eventRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 8,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: theme.colors.outlineVariant
+  mapShell: {
+    alignItems: "center",
+    gap: 12
   },
-  eventTopic: {
-    maxWidth: "65%"
+  mapPlaceholder: {
+    width: "100%",
+    aspectRatio: 0.9,
+    backgroundColor: theme.colors.surfaceVariant,
+    borderRadius: 28,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 6 },
+    shadowRadius: 12,
+    elevation: 4
   },
-  eventTime: {
-    color: theme.colors.onSurfaceVariant
+  mapPlaceholderText: {
+    fontSize: 18,
+    color: theme.colors.textSecondary
+  },
+  updatedAt: {
+    fontSize: 14,
+    color: theme.colors.textSecondary
+  },
+  emergencyButton: {
+    borderRadius: 18,
+    paddingVertical: 6,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 12
+  },
+  emergencyLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    letterSpacing: 0.5
   }
 });
