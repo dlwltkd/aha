@@ -68,11 +68,10 @@ export default function App() {
             <Stack.Screen
               name="Settings"
               component={SettingsScreen}
-              options={{
-                headerShown: true,
-                headerStyle: { backgroundColor: theme.colors.primary },
-                headerTintColor: theme.colors.onPrimary,
-                headerTitle: "설정"
+              options=  {{
+                presentation: "card",
+                animation: "slide_from_right",
+                headerShown: false
               }}
             />
           </Stack.Navigator>

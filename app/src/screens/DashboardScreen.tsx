@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 120,
     paddingBottom: 40,
-    gap: 32,
+    gap: 40,
     backgroundColor: theme.colors.background
   },
   header: {
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     color: theme.colors.primary
   },
   messageBlock: {
-    gap: 12
+    gap: 8,
   },
   primaryMessage: {
     fontSize: 22,
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowOffset: { width: 0, height: 6 },
     shadowRadius: 12,
-    elevation: 4
+    elevation: 10,
   },
   mapPlaceholderText: {
     fontSize: 18,

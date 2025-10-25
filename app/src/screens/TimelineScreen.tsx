@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
@@ -152,8 +152,8 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 12,
-    paddingTop: 8
+    paddingHorizontal: 0,
+    paddingTop: 25
   },
   headerTitle: {
     fontSize: 18,

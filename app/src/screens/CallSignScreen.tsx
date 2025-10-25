@@ -40,8 +40,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 24,
-    paddingTop: 20,
+    paddingHorizontal: 0 ,
+    paddingTop: 35,
     gap: 12
   },
   backButton: {
