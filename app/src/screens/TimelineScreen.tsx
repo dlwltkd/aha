@@ -1,9 +1,10 @@
-﻿import { useMemo, useState } from "react";
+﻿import { useCallback, useEffect, useMemo, useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 import { theme } from "../theme";
+import { getEventsByDate, type TimelineEvent } from "../services/eventStorage";
 
 type TimelineEntry = {
   time: string;
@@ -14,14 +15,30 @@ export default function TimelineScreen() {
   const navigation = useNavigation();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [calendarVisible, setCalendarVisible] = useState(false);
+  const [events, setEvents] = useState<TimelineEntry[]>([]);
 
-  const events = useMemo(() => buildTimeline(selectedDate), [selectedDate]);
+  // Load events when  screen is focused or date changes
+  useFocusEffect(
+    useCallback(() => {
+      loadEvents();
+    }, [selectedDate])
+  );
+
+  const loadEvents = async () => {
+    const eventData = await getEventsByDate(selectedDate);
+    const formatted = eventData.map(event => ({
+      time: formatTime(event.timestamp),
+      description: event.description,
+    }));
+    setEvents(formatted);
+  };
+
   const calendarMatrix = useMemo(() => buildCalendarMatrix(selectedDate), [selectedDate]);
   const formattedDate = formatDate(selectedDate);
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.headerRow}>
+      <View style={styles.header}>
         <IconButton icon="chevron-left" size={28} iconColor={theme.colors.primary} onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>타임라인</Text>
       </View>
@@ -64,25 +81,33 @@ export default function TimelineScreen() {
                       <Text style={[styles.dayLabel, isCurrent && styles.dayLabelSelected]}>{day?.getDate() ?? ""}</Text>
                     </TouchableOpacity>
                   );
-                })}
+                })};
               </View>
             ))}
           </View>
         )}
 
         <View style={styles.timelineCard}>
-          <View style={styles.timelineLine} />
-          <View style={styles.timelineContent}>
-            {events.map(entry => (
-              <View key={`${formattedDate}-${entry.time}`} style={styles.timelineRow}>
-                <View style={styles.dot} />
-                <View style={styles.timelineTexts}>
-                  <Text style={styles.timelineTime}>{entry.time}</Text>
-                  <Text style={styles.timelineDesc}>{entry.description}</Text>
-                </View>
+          {events.length > 0 ? (
+            <>
+              <View style={styles.timelineLine} />
+              <View style={styles.timelineContent}>
+                {events.map((entry, idx) => (
+                  <View key={`${formattedDate}-${idx}`} style={styles.timelineRow}>
+                    <View style={styles.dot} />
+                    <View style={styles.timelineTexts}>
+                      <Text style={styles.timelineTime}>{entry.time}</Text>
+                      <Text style={styles.timelineDesc}>{entry.description}</Text>
+                    </View>
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
+            </>
+          ) : (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyText}>이 날짜에 기록된 이벤트가 없습니다</Text>
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -96,29 +121,11 @@ function formatDate(date: Date) {
   )}`;
 }
 
-function buildTimeline(date: Date): TimelineEntry[] {
-  const base = date.getDate();
-  const template: TimelineEntry[] = [
-    { time: "08:12", description: "안방 퇴실" },
-    { time: "08:18", description: "거실 방문" },
-    { time: "09:05", description: "화장실 이용 시작" },
-    { time: "09:12", description: "화장실 이용 종료" },
-    { time: "12:33", description: "안방 입실" },
-    { time: "15:04", description: "거실 체류" },
-    { time: "18:20", description: "화장실 이용 시작" },
-    { time: "18:27", description: "화장실 이용 종료" },
-    { time: "22:03", description: "안방 입실" }
-  ];
-  return template.map((entry, idx) => {
-    const minutesOffset = (base + idx) % 5;
-    const [hour, minute] = entry.time.split(":").map(Number);
-    const newMinute = Math.min(59, minute + minutesOffset);
-    const newHour = hour + Math.floor((minute + minutesOffset) / 60);
-    return {
-      ...entry,
-      time: `${String(newHour).padStart(2, "0")}:${String(newMinute % 60).padStart(2, "0")}`
-    };
-  });
+function formatTime(timestamp: number): string {
+  const date = new Date(timestamp * 1000);
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;
 }
 
 function buildCalendarMatrix(date: Date): (Date | null)[][] {
@@ -149,14 +156,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF"
   },
-  headerRow: {
+  header: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 0,
-    paddingTop: 25
+    paddingHorizontal: 16,
+    paddingTop: 20,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "600",
     color: theme.colors.primary
   },
@@ -290,5 +297,16 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
     color: "#0F172A"
-  }
+  },
+  emptyState: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+  },
+  emptyText: {
+    fontSize: 15,
+    color: "#9CA3AF",
+    textAlign: "center",
+  },
 });

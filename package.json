@@ -1,1 +1,1 @@
-{"name":"home_vision_workspace","private":true}
+{"name":"home_vision_workspace","private":true,"dependencies":{"@expo/vector-icons":"^15.0.3","expo":"^54.0.25"}}

@@ -47,7 +47,7 @@ export default function StatsScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.headerRow}>
+      <View style={styles.header}>
         <IconButton icon="chevron-left" size={28} iconColor={theme.colors.primary} onPress={() => navigation.goBack()} />
         <Text style={styles.headerTitle}>시간대 통계량</Text>
       </View>
@@ -188,14 +188,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF"
   },
-  headerRow: {
+  header: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 0,
-    paddingTop: 25
+    paddingHorizontal: 16,
+    paddingTop: 20,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "600",
     color: theme.colors.primary
   },
